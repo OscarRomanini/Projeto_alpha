@@ -33,9 +33,9 @@ class Cliente
     public function insert()
     {
         $sql = new Sql();
-        $result = $sql->select("CALL cliente_insert(:NOME, :DTNASC)", array(
-            ":NOME" => $this->getNome(),
-            ":DTNASC" => $this->getNasc()
+        $result = $sql->select("CALL insert_cliente (:NOME, :DTNASC)", array(
+            ':NOME' => $this->getNome(),
+            ':DTNASC' => $this->getNasc()
         ));
         if (count($result) > 0){
             $this->setData($result[0]);
@@ -51,6 +51,7 @@ class Cliente
         $sql = new Sql();
         $sql->query("UPDATE cliente SET nome = :NOME, dtnasc = :DTNASC WHERE idcli = :ID", array(
             ":NOME" => $this->getNome(),
+            ":DTNASC" => $this->getNasc(),
             ":ID" => $this->getIdcli()
         ));
     }
@@ -58,18 +59,25 @@ class Cliente
     public function delete()
     {
         $sql = new Sql();
-        $sql->query("DELETE FROM cliente WHERE id = :ID", array(
+        $sql->select("DELETE FROM cliente WHERE idcli = :ID", array(
            ":ID" => $this->getIdcli()
         ));
-        $this->setIdcli(0);
-        $this->setNome("");
-        $this->setNasc(NULL);
+        /*$this->setIdcli(0);
+        $this->setNasc(" ");
+        $this->setNome(" "); */
+    }
+
+    public static function search($nome){
+        $sql = new Sql();
+        return $sql->select("SELECT * FROM cliente WHERE nome LIKE :SEARCH ORDER BY nome", array(
+            ":SEARCH" => "%".$nome."%"
+        ));
     }
 
     private function setData($data)
     {
         $this->setNome($data['nome']);
-        $this->setNasc($data['nasc']);
+        $this->setNasc($data['dtnasc']);
     }
 
 
